@@ -21,10 +21,11 @@ var masksArray = null;
 var platformsArray = null;
 var timeTxt = null;
 var floor = null;
+var hint = null;
 //game state vars
 var Paused = false;
 var isPlaying = false;
-var currentLevel = 0;
+var currentLevel = 0;//this is set to 0 on mainMenuPlayBtn click
 var levels = 5;
 var levelTime = 0;
 var currentScenario = 0;//shows what to add on every 10 seconds
@@ -183,6 +184,7 @@ function handleComplete() {
 }
 
 function playMusic(what){
+	/*
 	if(musicTxt != what){
 		musicTxt = what;
 		if(music)
@@ -193,10 +195,12 @@ function playMusic(what){
 			createjs.Sound.setVolume(0.2);
 			music = createjs.Sound.play(what, {loop: -1});
 		}
-	}	
+	}
+	*/	
 }
 
 function disableMusic(p){
+	/*
 	console.log('Muted music '+p)
 	if(p){
 		mutedMusic = true;
@@ -205,6 +209,7 @@ function disableMusic(p){
 		mutedMusic = false;
 		music.resume();
 	}
+	*/
 }
 
 function playSFX(what,howLoud){
@@ -237,19 +242,36 @@ function setVars(){
 function addGameControls(){
 	var buttonsY = H * 0.90;
 	var offsetX = W * 0.10;
-	leftButton = new lib.SoundSymbol();
+	var buttonsWidth = W * 0.03;
+
+ var child1 = new createjs.Shape(
+     new createjs.Graphics().beginFill("#999999")
+         .drawCircle(0, 0, buttonsWidth));
+
+         var child2 = new createjs.Shape(
+     new createjs.Graphics().beginFill("#999999")
+         .drawCircle(0, 0, buttonsWidth));
+
+         var child3 = new createjs.Shape(
+     new createjs.Graphics().beginFill("#999999")
+         .drawCircle(0, 0, buttonsWidth));
+
+	leftButton = new createjs.MovieClip();
+	leftButton.addChild(child1);
 	leftButton.gotoAndStop(0);
 	leftButton.x = offsetX;
 	leftButton.y = buttonsY;
 	leftButton.scaleX = 2.50;
 	leftButton.scaleY = 2.50;
-	rightButton = new lib.SoundSymbol();
+	rightButton = new createjs.MovieClip();
+	rightButton.addChild(child2);
 	rightButton.gotoAndStop(0);
-	rightButton.x = leftButton.x + offsetX;
+	rightButton.x = leftButton.x + buttonsWidth * 2 + offsetX;
 	rightButton.y = buttonsY;
 	rightButton.scaleX = 2.50;
 	rightButton.scaleY = 2.50;
-	jumpButton = new lib.SoundSymbol();
+	jumpButton = new createjs.MovieClip();
+	jumpButton.addChild(child3);
 	jumpButton.gotoAndStop(0);
 	jumpButton.x = W - offsetX;
 	jumpButton.y = buttonsY;
@@ -257,16 +279,16 @@ function addGameControls(){
 	jumpButton.scaleY = 2.50;
 
 	leftButton.name = "leftButton";
-	leftButton.addEventListener("mousedown", onPressDown);
-	leftButton.addEventListener("click", onPressUp);
+	leftButton.addEventListener("mousedown", onLeftButtonDown);
+	leftButton.addEventListener("click", onLeftButtonUp);
 
 	rightButton.name = "rightButton";
-	rightButton.addEventListener("mousedown", onPressDown);
-	rightButton.addEventListener("click", onPressUp);
+	rightButton.addEventListener("mousedown", onRightButtonDown);
+	rightButton.addEventListener("click", onRightButtonUp);
 
 	jumpButton.name = "jumpButton";
-	jumpButton.addEventListener("mousedown", onPressDown);
-	jumpButton.addEventListener("click", onPressUp);
+	jumpButton.addEventListener("mousedown", onJumpButtonDown);
+	jumpButton.addEventListener("click", onJumpButtonUp);
 
 	stage.addChild(leftButton);
 	stage.addChild(rightButton);
@@ -280,6 +302,36 @@ function removeGameControls(){
 	leftButton = null;
 	rightButton = null;
 	jumpButton = null;
+}
+
+function onLeftButtonDown(e){
+	if(heroes[0])	
+		heroes[0].left_ = true;
+}
+
+function onLeftButtonUp(e){
+	if(heroes[0])
+		heroes[0].left_ = false;
+}
+
+function onRightButtonDown(e){
+	if(heroes[0])	
+		heroes[0].right_ = true;
+}
+
+function onRightButtonUp(e){
+	if(heroes[0])	
+		heroes[0].right_ = false;
+}
+
+function onJumpButtonDown(e){
+	if(heroes[0])	
+		heroes[0].up_ = true;
+}
+
+function onJumpButtonUp(e){
+	if(heroes[0])	
+		heroes[0].up_ = false;
 }
 
 function onPressDown(e){
@@ -302,8 +354,10 @@ function onPressDown(e){
 function onPressUp(e){
 	switch(e.currentTarget.name){
 		case "leftButton":
-			if(heroes[0])	
+			if(heroes[0]){	
 				heroes[0].left_ = false;
+				heroes[0].y = 0;
+			}
 		break;
 		case "rightButton":
 			if(heroes[0])	
@@ -351,12 +405,11 @@ function addStuff(what,howMany,howMany1,btwScrAdd,btwScrRmv,btwScrRmv1){
 			timeTxt.cache(0,0,timeTxt.getBounds().width,timeTxt.getBounds().height*2);
 			stage.addChild(timeTxt);
 			levelTime = 30*FPS;
-			floor = new createjs.Bitmap('images/Bitmap7');
+			floor = new lib.Bitmap7();
 			floor.regX = 0;
 			floor.regY = 0;
 			floor.x = 0;
-			floor.y = H - 30;
-			stage.addChild(floor);
+			floor.y = H - floor.getBounds().height;
 			back.cache(0,0,W,H);
 			addObject('hero',0);
 			if(currentLevel == 0){
@@ -364,6 +417,7 @@ function addStuff(what,howMany,howMany1,btwScrAdd,btwScrRmv,btwScrRmv1){
 				instructionsFrames = 5 * FPS;
 			}
 			addEnemies();
+			stage.addChild(floor);
 			addGameControls();
 			stage.update();
 		break;
@@ -577,7 +631,8 @@ function removeStuff(what){
 			thornsArray = [];
 			swordsArray = [];
 			shurikensArray = [];
-
+			if(hint)
+				stage.removeChild(hint);
 		break;
 		case 'levelLabel':
 			if(levelLabel){
@@ -882,12 +937,23 @@ function addObject(what,pos,XX,YY){
 			rect.visible = false;
 			masksArray.push(rect);
 			stage.addChild(rect);
-			var thorn = new createjs.Bitmap('images/Bitmap3.png');
+			var thorn = new lib.Bitmap3();
 			thorn.mask = rect;
 			thorn.x = X;
 			thorn.y = Y+h;
 			thorn.regX = w/2;
 			thorn.regY = h;
+			//add hint
+			hint = new createjs.Bitmap("images/Hint.png");
+			hint.regX = 23.5;
+			hint.regY = 23.5;
+			hint.visible = true;
+			hint.alpha = .5;
+			hint.x = X; 
+			hint.y = Y-2*h;
+			stage.addChild(hint);
+			console.log('hint');
+			
 			thorn.listener = 'in';
 			thorn.upY = Y;
 			thorn.downY = thorn.y;
@@ -896,11 +962,13 @@ function addObject(what,pos,XX,YY){
 			var waitFrames = new Array(30,25,20,15,10);
 			thorn.waitFrames = 0;
 			thorn.waitFramesO = waitFrames[currentLevel];
+			thorn.ready = false;//give some time the hint to be seen, before thorn comes up
+			thorn.framesToReady = 10;
 			thornsArray.push(thorn);
 			stage.addChild(thorn);
 		break;
 		case 'platform':
-			var platform = new createjs.Bitmap('images/Bitmap5');
+			var platform = new lib.Bitmap5();
 			platform.regX = 0;
 			platform.regY = 0;
 			platform.x = XX;
@@ -1089,11 +1157,11 @@ function tick(e){
 					if(( hero.pos == '' && hero.right_) || (hero.pos == 1 && hero.left_))
 						jump(hero);
 				}		
+				console.log('left ' + hero.left_ + ' right ' + hero.right_)
 			}
 			if(hero.left_ && !hero.dead){
 				//walk
-				if(hero.slide && hero.pos == 1 && hero.up_)
-					jump(hero);
+				
 				hero.pos = '';
 				if(hero.x - hero.speed > 0){
 					hero.x -= hero.speed;
@@ -1111,8 +1179,7 @@ function tick(e){
 					creatureAct(hero,'walk');
 			}else
 				if(hero.right_ && !hero.dead){
-					if(hero.slide && hero.pos == '' && hero.up_)
-						jump(hero);
+					
 					hero.pos = 1;
 					if(hero.x + hero.speed < W){
 						hero.x += hero.speed;
@@ -1269,40 +1336,48 @@ function tick(e){
 		//move thorns
 		for(i=0;i<thornsArray.length;i++){
 			//thornsArray[i].rotation += 10;
-			switch(thornsArray[i].listener){
-				case 'in':
-					if(thornsArray[i].y > thornsArray[i].upY){
-						thornsArray[i].y -= thornsArray[i].speed;
-					}else{
-						thornsArray[i].y = thornsArray[i].upY;
-						thornsArray[i].listener = 'wait';
-						thornsArray[i].waitFrames = thornsArray[i].waitFramesO;
-					}
-				break;
-				case 'out':
-					if(thornsArray[i].y < thornsArray[i].downY){
-						thornsArray[i].y += thornsArray[i].speed;
-					}else{
-						thornsArray[i].y = thornsArray[i].downY;
-						removeObject('thorn',thornsArray[i]);
-					}
-				break;
-				case 'wait':
-					if(thornsArray[i].waitFrames > 0)
-						thornsArray[i].waitFrames--;
-					else{
-						thornsArray[i].listener = 'out';
-					}
-				break;
-			}
-			//collision between thorns and hero
-			for(j=0;j<heroes.length;j++){
-				hero = heroes[j];
-				if(thornsArray[i]){
-					collision = ndgmr.checkPixelCollision(hero,thornsArray[i],1);
-					if(collision)
-						die(hero);
+			if(thornsArray[i].ready){
+				switch(thornsArray[i].listener){
+					case 'in':
+						if(thornsArray[i].y > thornsArray[i].upY){
+							thornsArray[i].y -= thornsArray[i].speed;
+						}else{
+							hint.visible = false;
+							thornsArray[i].y = thornsArray[i].upY;
+							thornsArray[i].listener = 'wait';
+							thornsArray[i].waitFrames = thornsArray[i].waitFramesO;
+						}
+					break;
+					case 'out':
+						if(thornsArray[i].y < thornsArray[i].downY){
+							thornsArray[i].y += thornsArray[i].speed;
+						}else{
+							thornsArray[i].y = thornsArray[i].downY;
+							removeObject('thorn',thornsArray[i]);
+						}
+					break;
+					case 'wait':
+						if(thornsArray[i].waitFrames > 0)
+							thornsArray[i].waitFrames--;
+							
+						else{
+							thornsArray[i].listener = 'out';
+						}
+					break;
 				}
+				//collision between thorns and hero
+				for(j=0;j<heroes.length;j++){
+					hero = heroes[j];
+					if(thornsArray[i]){
+						collision = ndgmr.checkPixelCollision(hero,thornsArray[i],1);
+						if(collision)
+							die(hero);
+					}
+				}
+			}else{
+				thornsArray[i].framesToReady--;
+				if(thornsArray[i].framesToReady <= 0)
+					thornsArray[i].ready = true;
 			}
 			//move/collision swords
 			if(framesToSword > 0){
