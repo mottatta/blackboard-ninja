@@ -243,6 +243,7 @@ function addGameControls(){
 	var buttonsY = H * 0.90;
 	var offsetX = W * 0.10;
 	var buttonsWidth = W * 0.03;
+	var buttonsAlpha = 0.20;
 
  var child1 = new createjs.Shape(
      new createjs.Graphics().beginFill("#999999")
@@ -258,6 +259,7 @@ function addGameControls(){
 
 	leftButton = new createjs.MovieClip();
 	leftButton.addChild(child1);
+	leftButton.alpha = buttonsAlpha;
 	leftButton.gotoAndStop(0);
 	leftButton.x = offsetX;
 	leftButton.y = buttonsY;
@@ -265,12 +267,14 @@ function addGameControls(){
 	leftButton.scaleY = 2.50;
 	rightButton = new createjs.MovieClip();
 	rightButton.addChild(child2);
+	rightButton.alpha = buttonsAlpha;
 	rightButton.gotoAndStop(0);
 	rightButton.x = leftButton.x + buttonsWidth * 2 + offsetX;
 	rightButton.y = buttonsY;
 	rightButton.scaleX = 2.50;
 	rightButton.scaleY = 2.50;
 	jumpButton = new createjs.MovieClip();
+	jumpButton.alpha = buttonsAlpha;
 	jumpButton.addChild(child3);
 	jumpButton.gotoAndStop(0);
 	jumpButton.x = W - offsetX;
