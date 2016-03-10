@@ -1,0 +1,32 @@
+<html>
+<head>
+<style type='text/css'>
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+</style>
+<meta charset="UTF-8">
+<title>CreateJS export from BlackboardNinja</title>
+<script src="http://code.createjs.com/easeljs-0.7.1.min.js"></script>
+<script src="http://code.createjs.com/tweenjs-0.5.1.min.js"></script>
+<script src="http://code.createjs.com/movieclip-0.7.1.min.js"></script>
+<script src="http://code.createjs.com/preloadjs-0.3.0.min.js"></script>
+<script src="http://code.createjs.com/soundjs-0.5.2.min.js"></script>
+<link href='http://fonts.googleapis.com/css?family=Anton' rel='stylesheet' type='text/css'>
+<script src="BlackboardNinja.js"></script>
+<script src="Main.js"></script>
+<script src="ndgmr.Collision.js"></script>
+<script src="fgl-scaler.js" language="javascript"></script>
+<script src="Hero.js"></script>
+</head>
+
+<body onload="init();" style="background-color:#D4D4D4">
+	<canvas id="canvas" width="550" height="400" style="background-color:#FFFFFF"></canvas>
+	<script>
+        // Create an auto scaler for our game image, telling it the original size:
+        new AutoScaler('canvas', 1024, 600);
+    </script>
+</body>
+</html>
